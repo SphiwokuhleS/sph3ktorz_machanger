@@ -46,7 +46,7 @@ def get_current_interfaces():
 
 def get_current_mac_address(interface):
 	ifconfig_result  = subprocess.check_output(["ifconfig", interface])
-	mac_address_search_result = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w", ifconfig_result)
+	mac_address_search_result = re.search(r"[\w{2}:]{17}", ifconfig_result)
 
 	if mac_address_search_result:
 		return mac_address_search_result.group(0)
