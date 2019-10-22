@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import subprocess
 import optparse
@@ -23,7 +23,7 @@ def get_arguments():
 	parser.add_option("-i", "--interface", dest="interface", help="Interface Mac Adress to be changed")
 	parser.add_option("-m", "--mac", dest="new_mac", help="New Mac Address")
 	# parser.add_option("-n", "--inter", dest="interfaces", help="Print available Interfaces")
-	(options, arguments,)  = parser.parse_args()
+	(options, arguments)  = parser.parse_args()
 
 	if not options.interface:
 		parser.error("[-] Please specify an interface, use --help for more info")
@@ -36,7 +36,8 @@ def get_arguments():
 def get_current_interfaces():
 
 	interfaces_ifconfig_result = subprocess.check_output(["ifconfig", ])
-	interfaces_search_result = re.findall(r"\n.\w*:", interfaces_ifconfig_result, flags=0)
+	result_decode = interfaces_ifconfig_result.decode("utf-8")
+	interfaces_search_result = re.findall(r'\n.\w:*', result_decode, flags=0)
 
 	if interfaces_search_result:
 		return interfaces_search_result
@@ -45,8 +46,11 @@ def get_current_interfaces():
 
 
 def get_current_mac_address(interface):
-	ifconfig_result  = subprocess.check_output(["ifconfig", interface])
-	mac_address_search_result = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w", ifconfig_result)
+	ifconfig_result = subprocess.check_output(["ifconfig", interface])
+	result_decode = ifconfig_result.decode("utf-8")
+	mac_address_search_result = re.search(r'[\w{2}:]{17}', result_decode)
+
+	# print(mac_address_search_result)
 
 	if mac_address_search_result:
 		return mac_address_search_result.group(0)
